@@ -1,6 +1,6 @@
 # HCI-Habit-Tracker-App
 
-A half-semester long project for CEN 4721 - Human Computer Interaction.
+A half-semester long project for CEN 4721 - Human Computer Interaction.\
 "" is a habit tracker tool that provides intuitive visualizations to help users stay consistent.
 
 Team Members
