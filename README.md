@@ -1,7 +1,7 @@
 # HCI-Habit-Tracker-App
 
 A half-semester long project for CEN 4721 - Human Computer Interaction.\
-"" is a habit tracker tool that provides intuitive visualizations to help users stay consistent.
+"" is a habit-tracking tool that helps users stay consistent with intuitive data visualizations.
 
 Team Members
 * [Evie Meckley](https://github.com/emeckley)
