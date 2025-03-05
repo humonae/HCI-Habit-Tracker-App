@@ -5,7 +5,7 @@ A half-semester long project for CEN 4721 - Human Computer Interaction.\
 
 Our Team
 * [Evie Meckley](https://github.com/emeckley)
-* [Al Fahad](https://github.com/)
+* [Al Fahad](https://github.com/dahafla)
 * [Lysandra Belnavis-Walters](https://github.com/LysandraBW)
 * [Alana Belnavis-Walters](https://github.com/humonae)
 
