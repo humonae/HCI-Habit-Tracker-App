@@ -1,7 +1,6 @@
 # HCI-Habit-Tracker-App
 
-
-A half-semester long project for our CEN 4721 - Human Computer Interaction.
+A mobile app, half-semester long project for CEN 4721 - Human Computer Interaction.
 
 Team Members
 * [Evie Meckley](https://github.com/emeckley)
