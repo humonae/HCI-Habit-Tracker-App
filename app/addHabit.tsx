@@ -45,8 +45,7 @@ export default function AddHabit() {
             return;
 
         try {
-            console.log("User ID: " + userID);
-
+            // const ID = uuid.v4();
             const result = await db.runAsync(`INSERT INTO Habit (Name, Frequency, Good, Alert, UserID) VALUES ('${name}', '${frequency}', ${good ? 1 : 0}, ${alert ? 1 : 0}, ${userID});`);
             const habitID = result.lastInsertRowId;
 
@@ -58,18 +57,6 @@ export default function AddHabit() {
                 date.setMinutes(parseInt(alertDate.minute));
                 const dateString = date.toISOString().split('T')[0];
                 await db.execAsync(`INSERT INTO HabitAlarms (HabitID, Alarm) VALUES (${habitID}, '${dateString}');`);
-            const ID = uuid.v4();
-
-            await db.execAsync(`
-                INSERT INTO Habit (ID, Name, Frequency, Good, Alert, UserID) VALUES ('${ID}', ${name}', '${frequency}', ${habitType ? 1 : 0}, ${alertMe ? 1 : 0}, ${userID});
-            `);
-            const habits: any = await db.getAllAsync('SELECT * FROM Habit');
-            
-            const lastInsertedHabitID = habits[habits.length - 1].ID;
-            for (const alertDate of alertDates) {
-                await db.execAsync(`
-                    INSERT INTO HabitAlarms (Day, Hour, Minute, Time, HabitID) VALUES ('${alertDate.day}', '${alertDate.hour}', '${alertDate.minute}', '${alertDate.time}', ${lastInsertedHabitID});
-                `);
             }
             router.back();
         }
