@@ -15,9 +15,12 @@ export default function Index() {
         try {
           const db = await SQLite.openDatabaseAsync('databaseName');
           await db.execAsync(`
-            CREATE TABLE IF NOT EXISTS User (ID INTEGER PRIMARY KEY NOT NULL, Name TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS Habit (ID INTEGER PRIMARY KEY NOT NULL, Name TEXT NOT NULL, Frequency TEXT NOT NULL, GoodHabit INTEGER NOT NULL, AlertMe INTEGER NOT NULL, UserID INTEGER NOT NULL, FOREIGN KEY(UserID) REFERENCES User(ID));
-            CREATE TABLE IF NOT EXISTS Alarms (ID INTEGER PRIMARY KEY NOT NULL, Day TEXT NOT NULL, Hour TEXT NOT NULL, Minute TEXT NOT NULL, Time TEXT NOT NULL, HabitID INTEGER NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
+            CREATE TABLE IF NOT EXISTS User (ID INTEGER PRIMARY KEY NOT NULL, FName TEXT NOT NULL, LName TEXT NOT NULL, Email TEXT NOT NULL, Password TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS Frequency (ID INTEGER PRIMARY KEY NOT NULL, Type TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS Habit (ID INTEGER PRIMARY KEY NOT NULL, UserID INTEGER NOT NULL, Frequency TEXT NOT NULL, Name TEXT NOT NULL, Good INTEGER NOT NULL, Alert INTEGER NOT NULL, FOREIGN KEY(UserID) REFERENCES User(ID));
+            CREATE TABLE IF NOT EXISTS HabitJournal (ID INTEGER PRIMARY KEY NOT NULL, HabitID INTEGER NOT NULL, CreationDate DATETIME NOT NULL DEFAULT CURRENT_TIME, Content TEXT NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
+            CREATE TABLE IF NOT EXISTS HabitHistory (ID INTEGER PRIMARY KEY NOT NULL, HabitID INTEGER NOT NULL, DateCompleted DATE NOT NULL DEFAULT CURRENT_DATE, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
+            CREATE TABLE IF NOT EXISTS HabitAlarms (ID INTEGER PRIMARY KEY NOT NULL, HabitID INTEGER NOT NULL, Alarm DATETIME NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
           `);
           
           const habits: any = await db.getAllAsync('SELECT * FROM Habit');
@@ -51,7 +54,7 @@ export default function Index() {
         >
           {habits.map((habit, i) => (
             <View key={i}>
-              <Habit name={habit.Name}/>
+              <Habit name={habit.Name} id={habit.ID}/>
             </View>
           ))}
         </View>

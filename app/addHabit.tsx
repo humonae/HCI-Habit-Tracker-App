@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
 import * as SQLite from 'expo-sqlite';
 import { router } from 'expo-router';
+import uuid from 'react-native-uuid';
 
 export default function AddHabit() {
     const [userID, setUserID] = useState(0);
@@ -39,15 +40,17 @@ export default function AddHabit() {
             return;
 
         try {
+            const ID = uuid.v4();
+
             await db.execAsync(`
-                INSERT INTO Habit (Name, Frequency, GoodHabit, AlertMe, UserID) VALUES ('${name}', '${frequency}', ${habitType ? 1 : 0}, ${alertMe ? 1 : 0}, ${userID});
+                INSERT INTO Habit (ID, Name, Frequency, Good, Alert, UserID) VALUES ('${ID}', ${name}', '${frequency}', ${habitType ? 1 : 0}, ${alertMe ? 1 : 0}, ${userID});
             `);
             const habits: any = await db.getAllAsync('SELECT * FROM Habit');
             
             const lastInsertedHabitID = habits[habits.length - 1].ID;
             for (const alertDate of alertDates) {
                 await db.execAsync(`
-                    INSERT INTO Alarms (Day, Hour, Minute, Time, HabitID) VALUES ('${alertDate.day}', '${alertDate.hour}', '${alertDate.minute}', '${alertDate.time}', ${lastInsertedHabitID});
+                    INSERT INTO HabitAlarms (Day, Hour, Minute, Time, HabitID) VALUES ('${alertDate.day}', '${alertDate.hour}', '${alertDate.minute}', '${alertDate.time}', ${lastInsertedHabitID});
                 `);
             }
             
