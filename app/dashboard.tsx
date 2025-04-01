@@ -1,0 +1,77 @@
+import { router, useFocusEffect } from "expo-router";
+import { Text, View } from "react-native";
+import * as SQLite from 'expo-sqlite';
+import React, { useEffect, useState } from "react";
+import Habit from "@/components/Habit";
+import ButtonWrapper from "@/components/ButtonWrapper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+export default function Dashboard() {
+  const [userID, setUserID] = useState<number|null>();
+  const [habits, setHabits] = useState<Array<any>>([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const load = async () => {
+        try {  
+          const storedUserID: string|null = await AsyncStorage.getItem('userID');
+          if (!storedUserID)
+            return;
+          const userID = parseInt(storedUserID);
+          setUserID(userID);
+          
+          const db = await SQLite.openDatabaseAsync('databaseName');
+          await db.execAsync(`
+            CREATE TABLE IF NOT EXISTS User (ID INTEGER PRIMARY KEY NOT NULL, FName TEXT NOT NULL, LName TEXT NOT NULL, Email TEXT NOT NULL, Password TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS Habit (ID INTEGER PRIMARY KEY NOT NULL, UserID INTEGER NOT NULL, Frequency TEXT NOT NULL, Name TEXT NOT NULL, Good INTEGER NOT NULL, Alert INTEGER NOT NULL, FOREIGN KEY(UserID) REFERENCES User(ID));
+            CREATE TABLE IF NOT EXISTS HabitJournal (ID INTEGER PRIMARY KEY NOT NULL, HabitID INTEGER NOT NULL, CreationDate DATETIME NOT NULL DEFAULT CURRENT_TIME, Content TEXT NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
+            CREATE TABLE IF NOT EXISTS HabitHistory (HabitID INTEGER NOT NULL, DateCompleted DATE NOT NULL DEFAULT CURRENT_DATE, FOREIGN KEY(HabitID) REFERENCES Habit(ID), PRIMARY KEY(HabitID, DateCompleted));
+            CREATE TABLE IF NOT EXISTS HabitAlarms (ID INTEGER PRIMARY KEY NOT NULL, HabitID INTEGER NOT NULL, Alarm DATETIME NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
+          `);
+  
+          if (!userID) 
+            return;
+          console.log("User ID: " + userID);
+          const habits: any = await db.getAllAsync(`SELECT * FROM Habit JOIN User ON User.ID = Habit.UserID WHERE User.ID = ${userID}`);
+          setHabits(habits);
+          console.log("Habits: " + habits);
+        }
+        catch (err) {
+          console.error(err);
+        }
+      }
+      load();
+    }, [])
+  );
+  return (
+    <View
+      style={{
+        padding: 24,
+        flex: 1,
+        rowGap: 24,
+        width: "100%"
+      }}
+    >
+      <Text style={{fontSize: 32}}>Home</Text>
+      <View style={{display: "flex", rowGap: 12}}>
+        <Text style={{fontSize: 20, fontWeight: "medium"}}>Your Habits</Text>
+        <View
+          style={{
+            display: "flex",
+            rowGap: 12
+          }}
+        >
+          {habits.map((habit, i) => (
+            <View key={i}>
+              <Habit 
+                id={habit.ID}
+                name={habit.Name}
+              />
+            </View>
+          ))}
+        </View>
+      </View>
+      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%"}} title="Add Habit"/>
+    </View>
+  );
+}

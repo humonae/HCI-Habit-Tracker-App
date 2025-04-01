@@ -7,24 +7,29 @@ import { useEffect, useState } from "react";
 import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
 import * as SQLite from 'expo-sqlite';
 import { router } from 'expo-router';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AddHabit() {
-    const [userID, setUserID] = useState(0);
+    const [userID, setUserID] = useState<number>();
     const [db, setDB] = useState<SQLite.SQLiteDatabase>();
+    // Habit Information
     const [name, setName] = useState("");
     const [frequency, setFrequency] = useState("Daily");
-    const [habitType, setHabitType] = useState(true);
-    const [alertMe, setAlertMe] = useState(false);
+    const [good, setGood] = useState(true);
+    const [alert, setAlert] = useState(false);
     const [alertDates, setAlertDates] = useState<Array<DateTime>>([]);
     const [editAlertDateID, setEditAlertDateID] = useState(0);
 
     useEffect(() => {
-        const load = async () => {    
-            try {        
-                const db = await SQLite.openDatabaseAsync('databaseName');      
-                const firstUser: any = await db.getFirstAsync('SELECT * FROM User');
-                const firstHabit: any = await db.getFirstAsync('SELECT * FROM Habit');
-                console.log(firstUser, firstHabit);   
+        const load = async () => {
+            try {              
+                const storedUserID: string|null = await AsyncStorage.getItem('userID');
+                if (!storedUserID)
+                    return;
+                const userID = parseInt(storedUserID);
+                setUserID(userID);
+
+                const db = await SQLite.openDatabaseAsync('databaseName');
                 setDB(db);
             }
             catch (err) {
@@ -39,18 +44,20 @@ export default function AddHabit() {
             return;
 
         try {
-            await db.execAsync(`
-                INSERT INTO Habit (Name, Frequency, GoodHabit, AlertMe, UserID) VALUES ('${name}', '${frequency}', ${habitType ? 1 : 0}, ${alertMe ? 1 : 0}, ${userID});
-            `);
-            const habits: any = await db.getAllAsync('SELECT * FROM Habit');
-            
-            const lastInsertedHabitID = habits[habits.length - 1].ID;
+            console.log("User ID: " + userID);
+
+            const result = await db.runAsync(`INSERT INTO Habit (Name, Frequency, Good, Alert, UserID) VALUES ('${name}', '${frequency}', ${good ? 1 : 0}, ${alert ? 1 : 0}, ${userID});`);
+            const habitID = result.lastInsertRowId;
+
             for (const alertDate of alertDates) {
-                await db.execAsync(`
-                    INSERT INTO Alarms (Day, Hour, Minute, Time, HabitID) VALUES ('${alertDate.day}', '${alertDate.hour}', '${alertDate.minute}', '${alertDate.time}', ${lastInsertedHabitID});
-                `);
+                const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const date = new Date();
+                date.setDate(days.indexOf(alertDate.day));
+                date.setHours(parseInt(alertDate.hour));
+                date.setMinutes(parseInt(alertDate.minute));
+                const dateString = date.toISOString().split('T')[0];
+                await db.execAsync(`INSERT INTO HabitAlarms (HabitID, Alarm) VALUES (${habitID}, '${dateString}');`);
             }
-            
             router.back();
         }
         catch (err) {
@@ -99,9 +106,9 @@ export default function AddHabit() {
                     <Text style={{color: "#A3A3A3", marginBottom: 4}}>Lorem ipsum odor amet, consectetuer adipiscing elit. Massa nisi etiam malesuada mi luctus netus aptent natoque egestas.</Text>
                     <Toggle
                         label="Good Habit"
-                        value={habitType}
+                        value={good}
                         values={[[false, "Bad"], [true, "Good"]]}
-                        onValueChange={setHabitType}
+                        onValueChange={setGood}
                     />
                 </View>
                 <View
@@ -113,9 +120,9 @@ export default function AddHabit() {
                 <View style={{rowGap: 4}}>
                     <Text style={{fontSize: 16, fontWeight: "500", marginBottom: 4}}>Alarms</Text>
                     <Checkbox
-                        value={alertMe}
+                        value={alert}
                         label="Alert Me"
-                        onValueChange={setAlertMe}
+                        onValueChange={setAlert}
                     />
                     <Text style={{color: "#A3A3A3", marginBottom: 12}}>Lorem ipsum odor amet, consectetuer adipiscing elit. Massa nisi etiam malesuada mi luctus netus aptent natoque egestas.</Text>
                     {alertDates.length !== 0 &&
