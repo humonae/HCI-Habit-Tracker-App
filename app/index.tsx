@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import * as SQLite from 'expo-sqlite';
 import React, { useState } from "react";
 import Habit from "@/components/Habit";
@@ -35,7 +35,7 @@ export default function Index() {
   );
 
   return (
-    <View
+    <ScrollView
       style={{
         padding: 24,
         flex: 1,
@@ -53,12 +53,12 @@ export default function Index() {
         >
           {habits.map((habit, i) => (
             <View key={i}>
-              <Habit name={habit.Name} id={habit.ID}/>
+              <Habit name={habit.Name} id={habit.ID} good={habit.Good}/>
             </View>
           ))}
         </View>
       </View>
-      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%"}} title="Add Habit"/>
-    </View>
+      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%", marginTop: 20, marginBottom: 100}} title="Add Habit"/>
+    </ScrollView>
   );
 }
