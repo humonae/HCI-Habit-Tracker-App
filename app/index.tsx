@@ -43,9 +43,8 @@ export default function Index() {
         width: "100%"
       }}
     >
-      <Text style={{fontSize: 32}}>Home</Text>
       <View style={{display: "flex", rowGap: 12}}>
-        <Text style={{fontSize: 20, fontWeight: "medium"}}>Your Habits</Text>
+        <Text style={{fontSize: 25, fontWeight: "bold"}}>Your Habits</Text>
         <View
           style={{
             display: "flex",

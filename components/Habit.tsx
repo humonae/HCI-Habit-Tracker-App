@@ -22,11 +22,6 @@ export default function Habit(props: HabitProps) {
             try {        
                 const db = await SQLite.openDatabaseAsync('databaseName');     
                 setDB(db);
-
-                //await db.execAsync(`
-                //    INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES (1, '2024-03-29');
-                //`);
-
             }
             catch (err) {
                 console.error(err);
@@ -68,7 +63,7 @@ export default function Habit(props: HabitProps) {
             // update the weekly streak bar
             setWeekStreak(prevState => {
                 const updatedStates = [...prevState];
-                updatedStates[0] = false;
+                updatedStates[6] = false;
                 return updatedStates;
             });
             setStreakNumber(streakNumber - 1);
@@ -144,6 +139,7 @@ export default function Habit(props: HabitProps) {
 
         try {
             let currDate = new Date();
+            currDate.setDate(currDate.getDate() - 6);
             let currDateText = currDate.toISOString().split('T')[0];
 
             for (let i = 0; i < 7; i++) {
@@ -170,7 +166,7 @@ export default function Habit(props: HabitProps) {
                     return updatedStates;
                 });
 
-                currDate.setDate(currDate.getDate() - 1);
+                currDate.setDate(currDate.getDate() + 1);
                 currDateText = currDate.toISOString().split('T')[0];
             }
         }
@@ -203,10 +199,10 @@ export default function Habit(props: HabitProps) {
         }}>
             <Text style={{fontSize: 24, fontWeight: "400", paddingBottom: 15}}>{props.name}</Text>
             <View style={{position: 'absolute', top: 7, right: 10, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
-                <Button title="✓" onPress={handleLogPress}/>
+                <Button title="✓" onPress={handleLogPress} color='#222'/>
             </View>
             <View style={{position: 'absolute', top: 7, right: 60, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
-                <Button title="✐" onPress={handleNotePress}/>
+                <Button title="✐" onPress={handleNotePress} color='#222'/>
             </View>
 
             <View
@@ -217,8 +213,8 @@ export default function Habit(props: HabitProps) {
               }}
             >
               {weekStreak.map((day, i) => (
-                <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
-                  <Text></Text>
+                <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 5, width: 40, height: 40}}>
+                  <Text style={{fontSize: 30, color: (day ? '#040' : '#fff'), left: (day ? 7 : 10), top: 2}}>{day ? '✓' : 'X'}</Text>
                 </View>
               ))}
             </View>
