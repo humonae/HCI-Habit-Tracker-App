@@ -22,6 +22,10 @@ export default function Habit(props: HabitProps) {
             try {        
                 const db = await SQLite.openDatabaseAsync('databaseName');     
                 setDB(db);
+
+                /*await db.execAsync(`
+                    INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES (1, '2025-03-29');
+                `);*/
             }
             catch (err) {
                 console.error(err);
@@ -119,8 +123,9 @@ export default function Habit(props: HabitProps) {
                 currDateText = currDate.toISOString().split('T')[0];
 
                 const dates: any = await db.getAllAsync(`
-                    SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDate}';
+                    SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDateText}';
                 `);
+                console.log(dates);
 
                 streakEnded = (dates && !dates.length);
             }
@@ -142,23 +147,23 @@ export default function Habit(props: HabitProps) {
             currDate.setDate(currDate.getDate() - 6);
             let currDateText = currDate.toISOString().split('T')[0];
 
-            for (let i = 0; i < 7; i++) {
+            /*for (let i = 0; i < 7; i++) {
                 setWeekStreak(prevState => {
                     const updatedStates = [...prevState];
                     updatedStates[i] = false;
                     return updatedStates;
                 });
-            }
+            }*/
 
             for (let i = 0; i < 7; i++) {
-                console.log(currDateText);
-                console.log(props.id);
+                //console.log(currDateText);
+                //console.log(props.id);
                 const dates: any = await db.getAllAsync(`
                     SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDateText}';
                 `);
                 const present = !(dates.length === 0);
-                console.log(present);
-                console.log(dates);
+                //console.log(present);
+                //console.log(dates);
 
                 setWeekStreak(prevState => {
                     const updatedStates = [...prevState];
@@ -218,7 +223,7 @@ export default function Habit(props: HabitProps) {
                 </View>
               ))}
               <Text style={{position: 'absolute', right: -3, bottom: -5, fontSize: 42, color: (logged ? '#2b4' : '#eee')}}>★</Text>
-              <Text style={{position: 'absolute', right: 9, bottom: 2, fontSize: 30}}>{streakNumber}</Text>
+              <Text style={{position: 'absolute', right: (streakNumber == 1 ? 12 : 9), bottom: 2, fontSize: 30}}>{streakNumber}</Text>
             </View>
         </View>
     )
