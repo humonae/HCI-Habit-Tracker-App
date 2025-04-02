@@ -23,8 +23,18 @@ export default function Habit(props: HabitProps) {
                 const db = await SQLite.openDatabaseAsync('databaseName');     
                 setDB(db);
 
+                const dates: any = await db.getAllAsync(`
+                    SELECT * FROM HabitHistory;
+                `);
+
                 /*await db.execAsync(`
-                    INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES (1, '2025-03-29');
+                    DELETE FROM HabitHistory;
+                `);*/
+
+                //console.log(dates);
+
+                /*await db.execAsync(`
+                    INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES (1, '2025-04-01');
                 `);*/
             }
             catch (err) {
@@ -32,8 +42,25 @@ export default function Habit(props: HabitProps) {
             }
         }
         load();
-        //buildWeekStreak();
     }, []);
+
+    useEffect(() => {
+        const loadStreakInfo = async () => {
+            if (await habitIsPresent()) {
+                setLogged(true);
+                await calculateStreak();
+                await buildWeekStreak();
+                console.log(props.id + 'present');
+            }
+            if (!(await habitIsPresent())) {
+                setLogged(false);
+                await calculateStreak();
+                await buildWeekStreak();
+                console.log(props.id + 'absent');
+            }
+        };
+        loadStreakInfo();
+    }, [db]);
 
      const logHabit = async () => {
         if (!db)
@@ -46,6 +73,14 @@ export default function Habit(props: HabitProps) {
                 INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES ('${props.id}', '${date}');
             `);
             setLogged(true);
+
+            // update the weekly streak bar
+            setWeekStreak(prevState => {
+                const updatedStates = [...prevState];
+                updatedStates[6] = true;
+                return updatedStates;
+            });
+            setStreakNumber(streakNumber + 1);
         }
         catch (err) {
             console.error(err);
@@ -90,8 +125,10 @@ export default function Habit(props: HabitProps) {
             `);
 
             if (dates && !dates.length) {
+                setLogged(false);
                 return false;
             } else {
+                setLogged(true);
                 return true;
             }
 
@@ -111,10 +148,11 @@ export default function Habit(props: HabitProps) {
             let currDateText = currDate.toISOString().split('T')[0];
 
             const dates: any = await db.getAllAsync(`
-                SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDate}';
+                SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDateText}';
             `);
+            console.log(dates);
 
-            let streakEnded = !(dates && !dates.length);
+            let streakEnded = (!dates || dates.length === 0);
             let count = 0;
 
             while (!streakEnded) {
@@ -125,9 +163,13 @@ export default function Habit(props: HabitProps) {
                 const dates: any = await db.getAllAsync(`
                     SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDateText}';
                 `);
-                console.log(dates);
+                //console.log(dates);
 
-                streakEnded = (dates && !dates.length);
+                streakEnded = (!dates || dates.length === 0);
+            }
+
+            if (logged) {
+                count++;
             }
 
             setStreakNumber(count);
@@ -185,8 +227,6 @@ export default function Habit(props: HabitProps) {
             unlogHabit();
         } else {
             logHabit();
-            calculateStreak();
-            buildWeekStreak();
         }   
     }
 
