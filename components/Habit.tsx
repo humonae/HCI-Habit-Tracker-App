@@ -201,22 +201,24 @@ export default function Habit(props: HabitProps) {
             <View style={{position: 'absolute', top: 7, right: 10, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
                 <Button title="✓" onPress={handleLogPress} color='#222'/>
             </View>
-            <View style={{position: 'absolute', top: 7, right: 60, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
-                <Button title="✐" onPress={handleNotePress} color='#222'/>
+            <View style={{position: 'absolute', top: 7, right: 56, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
+                <Button title="✎" onPress={handleNotePress} color='#222'/>
             </View>
 
             <View
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'space-between'
+                gap: 5
               }}
             >
               {weekStreak.map((day, i) => (
-                <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 5, width: 40, height: 40}}>
-                  <Text style={{fontSize: 30, color: (day ? '#040' : '#fff'), left: (day ? 7 : 10), top: 2}}>{day ? '✓' : 'X'}</Text>
+                <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 2, width: 35, height: 40}}>
+                  <Text style={{fontSize: 27, color: (day ? '#040' : '#fff'), left: (day ? 6 : 9), top: 3}}>{day ? '✓' : 'X'}</Text>
                 </View>
               ))}
+              <Text style={{position: 'absolute', right: -3, bottom: -5, fontSize: 42, color: (logged ? '#2b4' : '#eee')}}>★</Text>
+              <Text style={{position: 'absolute', right: 9, bottom: 2, fontSize: 30}}>{streakNumber}</Text>
             </View>
         </View>
     )
