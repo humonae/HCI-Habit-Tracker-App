@@ -234,6 +234,10 @@ export default function Habit(props: HabitProps) {
 
     }
 
+    const handleHabitPress = async () => {
+
+    }
+
     return (
         <View style={{
             padding: 12,
@@ -243,10 +247,14 @@ export default function Habit(props: HabitProps) {
             boxShadow: "0px 1px 4px 0px #00000010"
         }}>
             <Text style={{fontSize: 24, fontWeight: "400", paddingBottom: 15}}>{props.name}</Text>
-            <View style={{position: 'absolute', top: 7, right: 10, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
+
+            <View style={{position: 'absolute', top: 7, right: 10, borderRadius: 100, width: 40, height: 40}}>
+                <Button title="❯" onPress={handleHabitPress} color='#eee'/>
+            </View>
+            <View style={{position: 'absolute', top: 7, right: 56, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
                 <Button title="✓" onPress={handleLogPress} color='#222'/>
             </View>
-            <View style={{position: 'absolute', top: 7, right: 56, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
+            <View style={{position: 'absolute', top: 7, right: 102, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
                 <Button title="✎" onPress={handleNotePress} color='#222'/>
             </View>
 
