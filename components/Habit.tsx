@@ -34,6 +34,17 @@ export default function Habit(props: HabitProps) {
             >
                 <Text>Log Note</Text>
             </Pressable>
+            <Pressable 
+                style={{
+                    backgroundColor: "blue"
+                }}
+                onPress={() => {
+                    router.push({ pathname: '/calendar', params: { habitID: props.id } });
+                    return null;
+                }}
+            >
+                <Text>Calendar</Text>
+            </Pressable>
             <Text style={{fontSize: 24, fontWeight: "400"}}>{props.name}</Text>
         </View>
     )

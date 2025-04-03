@@ -1,6 +1,6 @@
 import ButtonGroup from "@/components/ButtonGroup";
 import Checkbox from "@/components/Checkbox";
-import DateTimePicker, { DateTime } from "@/components/DateTime";
+import DateTimePicker, { DateTime } from "@/components/DateTimePicker";
 import Toggle from "@/components/Toggle";
 import { Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
