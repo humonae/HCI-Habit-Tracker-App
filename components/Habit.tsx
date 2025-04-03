@@ -2,10 +2,10 @@ import { View, Text, Button, Alert } from "react-native";
 import ButtonWrapper from "@/components/ButtonWrapper";
 import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite';
-import uuid from 'react-native-uuid';
-
+import { useRouter } from "expo-router";
 
 interface HabitProps {
+    id: number;
     name: string;   
     id: string;
 }
@@ -230,13 +230,11 @@ export default function Habit(props: HabitProps) {
         }   
     }
 
-    const handleNotePress = async () => {
-
-    }
-
     const handleHabitPress = async () => {
 
     }
+
+    const router = useRouter();
 
     return (
         <View style={{
@@ -255,7 +253,10 @@ export default function Habit(props: HabitProps) {
                 <Button title="✓" onPress={handleLogPress} color='#222'/>
             </View>
             <View style={{position: 'absolute', top: 7, right: 102, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
-                <Button title="✎" onPress={handleNotePress} color='#222'/>
+                <Button title="✎" color='#222' onPress={() => {
+                    router.push({ pathname: '/addNote', params: { habitID: props.id } });
+                    return null;
+                }}/>
             </View>
 
             <View
