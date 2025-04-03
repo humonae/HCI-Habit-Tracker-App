@@ -6,7 +6,8 @@ import { useRouter } from "expo-router";
 
 interface HabitProps {
     id: number;
-    name: string;   
+    name: string;  
+    good: number; 
 }
 
 export default function Habit(props: HabitProps) {
@@ -15,6 +16,13 @@ export default function Habit(props: HabitProps) {
     const [logged, setLogged] = useState(false);
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
+    const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#9fe3ae');
+    const [clickedColor, setClickedColor] = useState(props.good ? '#2b4' : '#B00');
+    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#040' : '#1c0101');
+    const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#fff' : '#bdf2c9');
+    const [loggedButtonSymbol, setLoggedButtonSymbol] = useState(props.good ? '✓' : 'X');
+    const [unloggedButtonSymbol, setUnloggedButtonSymbol] = useState(props.good ? 'X' : '✓');
+
 
     useEffect(() => {
         const load = async () => {    
@@ -253,8 +261,8 @@ export default function Habit(props: HabitProps) {
                 <View style={{position: 'absolute', top: 7, right: 10, borderRadius: 100, width: 40, height: 40}}>
                     <Button title="❯" onPress={handleHabitPress} color='#eee'/>
                 </View>
-                <View style={{position: 'absolute', top: 7, right: 56, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
-                    <Button title="✓" onPress={handleLogPress} color='#222'/>
+                <View style={{position: 'absolute', top: 7, right: 56, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? clickedColor : unclickedColor), borderRadius: 100, width: 40, height: 40}}>
+                    <Button title={loggedButtonSymbol} onPress={handleLogPress} color='#222'/>
                 </View>
                 <View style={{position: 'absolute', top: 7, right: 102, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
                     <Button title="✎" color='#222' onPress={() => {
@@ -271,11 +279,11 @@ export default function Habit(props: HabitProps) {
                 }}
                 >
                 {weekStreak.map((day, i) => (
-                    <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 2, width: 35, height: 40}}>
-                    <Text style={{fontSize: 27, color: (day ? '#040' : '#fff'), left: (day ? 6 : 9), top: 3}}>{day ? '✓' : 'X'}</Text>
+                    <View key={i} style={{backgroundColor: (day ? clickedColor : unclickedColor), borderRadius: 2, width: 35, height: 40}}>
+                    <Text style={{fontSize: 27, color: (day ? loggedStreakTextColor : unloggedStreakTextColor), left: (day ? (props.good ? 6 : 9) : (props.good ? 9 : 6)), top: 3}}>{day ? loggedButtonSymbol : unloggedButtonSymbol}</Text>
                     </View>
                 ))}
-                <Text style={{position: 'absolute', right: -3, bottom: -5, fontSize: 42, color: (logged ? '#2b4' : '#eee')}}>★</Text>
+                <Text style={{position: 'absolute', right: -3, bottom: -5, fontSize: 42, color: (logged ? clickedColor : unclickedColor)}}>★</Text>
                 <Text style={{position: 'absolute', right: (streakNumber == 1 ? 12 : 9), bottom: 2, fontSize: 30}}>{streakNumber}</Text>
                 </View>
             </View>
