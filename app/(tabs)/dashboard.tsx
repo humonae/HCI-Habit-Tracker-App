@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { Text, View } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import * as SQLite from 'expo-sqlite';
 import React, { useEffect, useState } from "react";
 import Habit from "@/components/Habit";
@@ -43,8 +43,9 @@ export default function Dashboard() {
       load();
     }, [])
   );
+
   return (
-    <View
+    <ScrollView
       style={{
         padding: 24,
         flex: 1,
@@ -52,9 +53,9 @@ export default function Dashboard() {
         width: "100%"
       }}
     >
-      <Text style={{fontSize: 32}}>Home</Text>
-      <View style={{display: "flex", rowGap: 12}}>
-        <Text style={{fontSize: 20, fontWeight: "medium"}}>Your Habits</Text>
+
+      <View style={{display: "flex", rowGap: 12, marginTop: 50}}>
+        <Text style={{fontSize: 25, fontWeight: "bold"}}>Your Habits</Text>
         <View
           style={{
             display: "flex",
@@ -71,7 +72,7 @@ export default function Dashboard() {
           ))}
         </View>
       </View>
-      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%"}} title="Add Habit"/>
-    </View>
+      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%", marginTop: 20, marginBottom: 100}} title="Add Habit"/>
+    </ScrollView>
   );
 }
