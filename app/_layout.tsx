@@ -25,8 +25,6 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="dashboard" options={{ headerShown: false }}/>
-      <Stack.Screen name="addHabit" options={{title: "Add Habit"}}/>
     </Stack>
   );
 }
