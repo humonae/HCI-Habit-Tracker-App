@@ -17,8 +17,8 @@ export default function Habit(props: HabitProps) {
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
     const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#9fe3ae');
-    const [clickedColor, setClickedColor] = useState(props.good ? '#2b4' : '#B00');
-    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#040' : '#1c0101');
+    const [clickedColor, setClickedColor] = useState(props.good ? '#2b4' : '#e08989');
+    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#040' : '#f5b0b0');
     const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#fff' : '#bdf2c9');
     const [loggedButtonSymbol, setLoggedButtonSymbol] = useState(props.good ? '✓' : 'X');
     const [unloggedButtonSymbol, setUnloggedButtonSymbol] = useState(props.good ? 'X' : '✓');
