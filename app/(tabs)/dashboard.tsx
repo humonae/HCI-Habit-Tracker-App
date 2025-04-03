@@ -67,6 +67,7 @@ export default function Dashboard() {
               <Habit 
                 id={habit.ID}
                 name={habit.Name}
+                good={habit.Good}
               />
             </View>
           ))}
