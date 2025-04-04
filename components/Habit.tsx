@@ -18,12 +18,10 @@ export default function Habit(props: HabitProps) {
     const [logged, setLogged] = useState(false);
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
-    const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#c9f2ca');
-    const [clickedColor, setClickedColor] = useState(props.good ? '#2b4' : '#f79c9c');
-    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#040' : '#6e2f2f');
-    const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#fff' : '#e1fae2');
-    const [loggedButtonSymbol, setLoggedButtonSymbol] = useState(props.good ? '✓' : 'X');
-    const [unloggedButtonSymbol, setUnloggedButtonSymbol] = useState(props.good ? 'X' : '✓');
+    const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#E9FAE3');
+    const [clickedColor, setClickedColor] = useState(props.good ? '#E9FAE3' : '#facaca');
+    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#9BD199' : '#eb8f8f');
+    const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#C4C4C4' : '#9BD199');
 
 
     useEffect(() => {
@@ -301,7 +299,7 @@ export default function Habit(props: HabitProps) {
                             <View 
                                 key={i} 
                                 style={{
-                                    backgroundColor: (day ? '#E9FAE3' : '#eee'), 
+                                    backgroundColor: (day ? clickedColor : unclickedColor), 
                                     borderRadius: 8, 
                                     width: 36, 
                                     height: 36,
@@ -310,7 +308,7 @@ export default function Habit(props: HabitProps) {
                                     justifyContent: "center"
                                 }}
                             >
-                                {day ? <Check color="#9BD199" strokeWidth={3}/> : <X color="#C4C4C4" strokeWidth={3}/>}
+                                {day ? (props.good ? <Check color={loggedStreakTextColor} strokeWidth={3}/> : <X color={loggedStreakTextColor} strokeWidth={3}/>) : (props.good ? <X color={unloggedStreakTextColor} strokeWidth={3}/> : <Check color={unloggedStreakTextColor} strokeWidth={3}/>)}
                             </View>
                         ))}
                     </View>
