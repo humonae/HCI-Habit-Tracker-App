@@ -38,7 +38,8 @@ export default function Habit(props: HabitProps) {
                     DELETE FROM HabitHistory;
                 `);*/
 
-                //console.log(dates);
+                console.log('hi again');
+                console.log(dates);
 
                 /*await db.execAsync(`
                     INSERT INTO HabitHistory (HabitID, DateCompleted) VALUES (1, '2025-04-01');
@@ -55,19 +56,24 @@ export default function Habit(props: HabitProps) {
         const loadStreakInfo = async () => {
             if (await habitIsPresent()) {
                 setLogged(true);
-                await calculateStreak();
                 await buildWeekStreak();
+                await calculateStreak();
+
                 console.log(props.id + 'present');
             }
             if (!(await habitIsPresent())) {
                 setLogged(false);
-                await calculateStreak();
                 await buildWeekStreak();
+                await calculateStreak();
                 console.log(props.id + 'absent');
             }
         };
         loadStreakInfo();
     }, [db]);
+
+    useEffect(() => {
+        calculateStreak();
+    }, [weekStreak]);
 
      const logHabit = async () => {
         if (!db)
@@ -87,7 +93,8 @@ export default function Habit(props: HabitProps) {
                 updatedStates[6] = true;
                 return updatedStates;
             });
-            setStreakNumber(streakNumber + 1);
+            //setStreakNumber(streakNumber + 1);
+            await calculateStreak();
         }
         catch (err) {
             console.error(err);
@@ -105,6 +112,8 @@ export default function Habit(props: HabitProps) {
                 DELETE FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${date}';
             `);
             setLogged(false);
+            console.log('unlog1' + logged);
+
 
             // update the weekly streak bar
             setWeekStreak(prevState => {
@@ -112,7 +121,9 @@ export default function Habit(props: HabitProps) {
                 updatedStates[6] = false;
                 return updatedStates;
             });
-            setStreakNumber(streakNumber - 1);
+            //setStreakNumber(streakNumber - 1);
+            await calculateStreak();
+            console.log('unlog2' + logged);
         }
         catch (err) {
             console.error(err);
@@ -151,15 +162,19 @@ export default function Habit(props: HabitProps) {
         }
 
         try {
-            let currDate = new Date();
+            // This code is the proper logic, but it's bugging
+            /*let currDate = new Date();
             let currDateText = currDate.toISOString().split('T')[0];
 
             const dates: any = await db.getAllAsync(`
                 SELECT * FROM HabitHistory WHERE HabitID = '${props.id}' AND DateCompleted = '${currDateText}';
             `);
+            console.log('streak again');
             console.log(dates);
 
             let streakEnded = (!dates || dates.length === 0);
+            console.log(streakEnded);
+            console.log(logged);
             let count = 0;
 
             while (!streakEnded) {
@@ -176,6 +191,19 @@ export default function Habit(props: HabitProps) {
             }
 
             if (logged) {
+                count++;
+            }*/
+
+            // This code only tracks streaks that are at most 7 long, but it's working
+            console.log(weekStreak);
+            let count = 0;
+            for (let i = 5; i >= 0; i--) {
+                if (!weekStreak[i]) {
+                    break;
+                }
+                count++;
+            }
+            if (weekStreak[6]) {
                 count++;
             }
 
