@@ -8,7 +8,7 @@ interface ErrorMessageProps {
 
 export default function ErrorMessage(props: ErrorMessageProps) {
     return (
-        <View style={{backgroundColor: RED_1, paddingVertical: VERTICAL_PADDING * 1.5, paddingHorizontal: HORIZONTAL_PADDING, display: "flex", flexDirection: "row", alignItems: "center", gap: 4, borderRadius: 9, borderWidth: 1, borderColor: "#d63024", height: "auto"}}>
+        <View style={{backgroundColor: RED_1, paddingVertical: VERTICAL_PADDING * 1.5, paddingHorizontal: HORIZONTAL_PADDING, display: "flex", flexDirection: "row", alignItems: "center", gap: 4, borderRadius: 9, borderWidth: 1, borderColor: RED_1, height: "auto"}}>
             <View style={{height: "100%"}}>
                 <CircleX size={16} color={RED_2}/>
             </View>
