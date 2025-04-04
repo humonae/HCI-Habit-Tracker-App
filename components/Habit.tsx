@@ -8,7 +8,8 @@ import { BadgePlus, BookPlus, Calendar, Check, NotebookText, NotepadText, Pencil
 
 interface HabitProps {
     id: number;
-    name: string;   
+    name: string;  
+    good: number; 
 }
 
 export default function Habit(props: HabitProps) {
@@ -17,6 +18,13 @@ export default function Habit(props: HabitProps) {
     const [logged, setLogged] = useState(false);
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
+    const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#c9f2ca');
+    const [clickedColor, setClickedColor] = useState(props.good ? '#2b4' : '#f79c9c');
+    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#040' : '#6e2f2f');
+    const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#fff' : '#e1fae2');
+    const [loggedButtonSymbol, setLoggedButtonSymbol] = useState(props.good ? '✓' : 'X');
+    const [unloggedButtonSymbol, setUnloggedButtonSymbol] = useState(props.good ? 'X' : '✓');
+
 
     useEffect(() => {
         const load = async () => {    
