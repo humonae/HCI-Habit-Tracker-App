@@ -11,22 +11,26 @@ import TextField from "@/components/TextField";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-// The first element is the value of the field,
-// the second element is an error message for
-// that field, if any.
-export type Field = [string, string|null];
+import { Field } from "@/components/Field";
+import { EMAIL_REGEX, NAME_REGEX } from "@/constants/regex";
+import Button from "@/components/basic/Button";
+import { BLUE, HORIZONTAL_PADDING, VERTICAL_PADDING } from "@/constants/design";
+import Header from "@/components/basic/Header";
+import ErrorMessage from "@/components/basic/ErrorMessage";
 
 export default function SignUp() {
     const router = useRouter();
     const [db, setDB] = useState<SQLite.SQLiteDatabase>();
+    const [error, setError] = useState("");
+
+    // Sign Up Information
     const [fName, setFName] = useState<Field>(["", null]);
     const [lName, setLName] = useState<Field>(["", null]);
-    const [emailAddress, setEmailAddress] = useState<Field>(["", null]);
+    const [email, setEmail] = useState<Field>(["", null]);
     const [password, setPassword] = useState<Field>(["", null]);
-    const [emailAddresses, setEmailAddresses] = useState<Array<string>>([]);
-    // This will be updated after the user signs up, and will consequently
-    // be put into storage so that we can reference the user's ID across files.;
+
+    // Array of Used Emails
+    const [emails, setEmails] = useState<Array<string>>([]);
 
     useEffect(() => {
         const load = async () => {    
@@ -37,12 +41,10 @@ export default function SignUp() {
                 if (!db)
                     return;
 
-                // This is probably something you shouldn't do
-                // in code that is actually used, but just to
-                // figure out everything.
-                const emailAddresses: any = await db.getAllAsync('SELECT Email FROM User');
-                console.log(emailAddresses.map((email: any) => email["Email"]));
-                setEmailAddresses(emailAddresses.map((email: any) => email["Email"]));
+                // To make sure that the user doesn't enter an existing email,
+                // we fetch the existing email addresses.
+                const emails: any = await db.getAllAsync('SELECT Email FROM User');
+                setEmails(emails.map((email: any) => email["Email"]));
             }
             catch (err) {
                 console.error(err);
@@ -51,80 +53,120 @@ export default function SignUp() {
         load();
     }, []);
 
+    const updateFName = (fName: string): boolean => {
+        let error = "";
+        if (!fName.match(NAME_REGEX))
+            error += "Please enter a valid name.";
+        setFName([fName, error]);
+        return !!!error;
+    }
+
+    const updateLName = (lName: string): boolean => {
+        let error = "";
+        if (!lName.match(NAME_REGEX))
+            error += "Please enter a valid name.";
+        setLName([lName, error]);
+        return !!!error;
+    }
+
+    const updateEmail = (email: string): boolean => {
+        let error = "";
+        if (emails.findIndex(e => e === email) !== -1)
+            error += "Email address already exists. ";
+        if (!email.match(EMAIL_REGEX))
+            error += "Please enter a valid email address. ";
+        setEmail([email, error]);
+        return !!!error;
+    }
+    
+    const updatePassword = (password: string) => {
+        let error = "";
+        if (password.length < 3)
+            error += "Password must have at least 3 characters.";
+        setPassword([password, error]);
+        return !!!error;
+    }
+
     const signUp = async () => {
         if (!db)
             return;
 
+        // Checking Fields
+        const fieldValidity = [updateFName(fName[0]), updateLName(lName[0]), updateEmail(email[0]) , updatePassword(password[0])];
+        if (fieldValidity.findIndex(v => !v) !== -1)
+            return;
+
         try {
-            const result = await db.runAsync(`
-                INSERT INTO User (FName, LName, Email, Password) VALUES ('${fName[0]}', '${lName[0]}', '${emailAddress[0]}', '${password[0]}');
+            const user = await db.runAsync(`
+                INSERT INTO User (FName, LName, Email, Password) 
+                VALUES (
+                    '${fName[0]}', 
+                    '${lName[0]}', 
+                    '${email[0]}',
+                    '${password[0]}'
+                );
             `);
-            const userID: number = result.lastInsertRowId;
+            const userID: number = user.lastInsertRowId;
             await AsyncStorage.setItem('userID', userID.toString());
-            router.push('/dashboard');
+            router.replace('/dashboard');
         }
         catch (err) {
+            setError("Unable to create account. Please try again");
             console.error(err);
         }
     }
 
     return (
-        <GestureHandlerRootView>
-            <SafeAreaView style={{padding: 16, display: "flex", gap: 16}}>
-                <Text style={{fontSize: 40}}>Sign Up</Text>
+        <GestureHandlerRootView style={{backgroundColor: "white", height: "100%", padding: 0, margin: 0}}>
+            <View style={{paddingVertical: VERTICAL_PADDING * 11, paddingHorizontal: HORIZONTAL_PADDING * 2, gap: 32, backgroundColor: "white"}}>
+                <Header
+                    title="Sign Up" 
+                    paragraph="To start keeping track of your habits, create an account here."
+                />
+                {error &&
+                    <ErrorMessage
+                        error={error}
+                    />
+                }
                 <View style={{display: "flex", flexDirection: "column", gap: 16}}>
                     <TextField
                         value={fName[0]}
                         placeholder="First Name"
-                        onChangeText={text => setFName([text, null])}
+                        onChangeText={text => updateFName(text)}
                         error={fName[1]}
                     />
                     <TextField
                         value={lName[0]}
                         placeholder="Last Name"
-                        onChangeText={text => setLName([text, null])}
+                        onChangeText={text => updateLName(text)}
                         error={lName[1]}
                     />
                     <TextField
-                        value={emailAddress[0]}
+                        value={email[0]}
                         placeholder="Email Address"
-                        onChangeText={(text: string) => {
-                            let error = "";
-                            const emailAddressRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
-                            if (emailAddresses.findIndex(e => e === text) !== -1)
-                                error = "Email address already exists. ";
-                            if (!text.match(emailAddressRegex))
-                                error += "Please enter a valid email address. "
-                            setEmailAddress([text, error]);
-                        }}
-                        error={emailAddress[1]}
+                        onChangeText={text => updateEmail(text)}
+                        error={email[1]}
                     />
                     <TextField
                         value={password[0]}
                         placeholder="Password"
-                        onChangeText={text => setPassword([text, null])}
+                        onChangeText={text => updatePassword(text)}
                         error={password[1]}
                     />
-                    <Pressable
-                        onPress={async () => {
-                            await signUp();
-                        }}
-                        style={{
-                            padding: 12,
-                            borderRadius: 6,
-                            backgroundColor: "#007AFF",
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                        }}
-                    >
-                        <Text style={{fontSize: 20, fontWeight: "medium", color: "white"}}>Sign Up</Text>
-                    </Pressable>
+                    <View style={{gap: 8}}>
+                        <Button
+                            label="Create Account"
+                            onPress={signUp}
+                            style={{
+                                backgroundColor: BLUE
+                            }}
+                        />    
+                        <Pressable onPress={() => {router.replace("/")}}>
+                            <Text style={{textAlign: "center", fontWeight: 400}}>Already have an account? <Text style={{fontWeight: 600, color: BLUE}}>Log In</Text></Text>
+                        </Pressable>
+                    </View>
                 </View>
-                <Pressable onPress={() => {router.push("/")}}>
-                    <Text>Already have an account? Login.</Text>
-                </Pressable>
-            </SafeAreaView>
+            </View>
         </GestureHandlerRootView>
     )
 }

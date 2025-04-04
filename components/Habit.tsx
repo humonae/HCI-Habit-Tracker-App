@@ -3,6 +3,8 @@ import ButtonWrapper from "@/components/ButtonWrapper";
 import React, { useState, useEffect } from "react";
 import * as SQLite from 'expo-sqlite';
 import { useRouter } from "expo-router";
+import { BORDER_COLOR, BOX_SHADOW, BOX_SHADOW_MD, HORIZONTAL_PADDING, VERTICAL_PADDING } from "@/constants/design";
+import { BadgePlus, BookPlus, Calendar, Check, NotebookText, NotepadText, Pencil, ScrollText, Star, X } from "lucide-react-native";
 
 interface HabitProps {
     id: number;
@@ -10,8 +12,8 @@ interface HabitProps {
 }
 
 export default function Habit(props: HabitProps) {
+    const router = useRouter();
     const [db, setDB] = useState<SQLite.SQLiteDatabase>();
-    const [text, setText] = useState('hi');
     const [logged, setLogged] = useState(false);
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
@@ -230,53 +232,84 @@ export default function Habit(props: HabitProps) {
     }
 
     const handleHabitPress = async () => {
-
+        router.push({ pathname: '/calendar', params: { habitID: props.id } });
+        return null;
     }
 
-    const router = useRouter();
+    const handleNotePress = async () => {
+        router.push({ pathname: '/addNote', params: { habitID: props.id } });
+    }
 
     return (
-        <Pressable
-            onPress={() => {
-                router.push({ pathname: '/calendar', params: { habitID: props.id } });
-                return null;
-            }}
-        >
+        <Pressable onPress={handleHabitPress}>
             <View style={{
-                padding: 12,
                 backgroundColor: "white",
                 width: "100%",
-                borderRadius: 8,
-                boxShadow: "0px 1px 4px 0px #00000010"
+                borderWidth: 1,
+                borderColor: BORDER_COLOR,
+                borderRadius: 10,
+                boxShadow: BOX_SHADOW
             }}>
-                <Text style={{fontSize: 24, fontWeight: "400", paddingBottom: 15}}>{props.name}</Text>
-                <View style={{position: 'absolute', top: 7, right: 10, borderRadius: 100, width: 40, height: 40}}>
-                    <Button title="❯" onPress={handleHabitPress} color='#eee'/>
-                </View>
-                <View style={{position: 'absolute', top: 7, right: 56, color: (logged ? '#eee' : '#bbb'), backgroundColor: (logged ? '#2b4' : '#eee'), borderRadius: 100, width: 40, height: 40}}>
-                    <Button title="✓" onPress={handleLogPress} color='#222'/>
-                </View>
-                <View style={{position: 'absolute', top: 7, right: 102, backgroundColor: '#eee', borderRadius: 100, width: 40, height: 40}}>
-                    <Button title="✎" color='#222' onPress={() => {
-                        router.push({ pathname: '/addNote', params: { habitID: props.id } });
-                        return null;
-                    }}/>
-                </View>
-
-                <View
-                style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    gap: 5
-                }}
-                >
-                {weekStreak.map((day, i) => (
-                    <View key={i} style={{backgroundColor: (day ? '#2b4' : '#eee'), borderRadius: 2, width: 35, height: 40}}>
-                    <Text style={{fontSize: 27, color: (day ? '#040' : '#fff'), left: (day ? 6 : 9), top: 3}}>{day ? '✓' : 'X'}</Text>
+                <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "100%", height: "auto", paddingHorizontal: HORIZONTAL_PADDING * 2, paddingVertical: VERTICAL_PADDING * 2, borderBottomWidth: 1, borderBottomColor: BORDER_COLOR}}>
+                    {/* Habit Name */}
+                    <Text style={{fontSize: 24, fontWeight: "400"}}>{props.name}</Text>
+                    {/* Buttons */}
+                    <View style={{display: "flex", flexDirection: "row", gap: VERTICAL_PADDING * 2}}>
+                        {/* Log Press */}
+                        <Pressable
+                            onPress={(event) => {
+                                event.stopPropagation();
+                                handleLogPress();
+                            }}
+                            style={{borderRadius: 100, width: 32, height: 32, backgroundColor: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center", borderWidth: 0, borderColor: "#C4C4C4"}}
+                        >
+                            <BadgePlus size={20} color="#C4C4C4"/>
+                        </Pressable>
+                        {/* Note Press */}
+                        <Pressable
+                            onPress={(event) => {
+                                event.stopPropagation();
+                                handleNotePress();
+                            }}
+                            style={{borderRadius: 100, width: 32, height: 32, backgroundColor: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center", borderWidth: 0, borderColor: "#C4C4C4"}}
+                        >
+                            <ScrollText size={20} color="#C4C4C4"/>
+                        </Pressable>
+                        {/* Calendar Press */}
+                        <Pressable
+                            onPress={(event) => {
+                                event.stopPropagation();
+                                handleHabitPress();
+                            }}
+                            style={{borderRadius: 100, width: 32, height: 32, backgroundColor: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center", borderWidth: 0, borderColor: "#C4C4C4"}}
+                        >
+                            <Calendar size={20} color="#C4C4C4"/>
+                        </Pressable>
                     </View>
-                ))}
-                <Text style={{position: 'absolute', right: -3, bottom: -5, fontSize: 42, color: (logged ? '#2b4' : '#eee')}}>★</Text>
-                <Text style={{position: 'absolute', right: (streakNumber == 1 ? 12 : 9), bottom: 2, fontSize: 30}}>{streakNumber}</Text>
+                </View>
+                <View style={{display: 'flex', flexDirection: 'row'}}>
+                    <View style={{display: 'flex', flexDirection: 'row', gap: 5, borderRightWidth: 1, paddingHorizontal: HORIZONTAL_PADDING * 2, paddingVertical: VERTICAL_PADDING * 2, borderRightColor: BORDER_COLOR}}>
+                        {weekStreak.map((day, i) => (
+                            <View 
+                                key={i} 
+                                style={{
+                                    backgroundColor: (day ? '#E9FAE3' : '#eee'), 
+                                    borderRadius: 8, 
+                                    width: 36, 
+                                    height: 36,
+                                    display: "flex", 
+                                    alignItems: "center", 
+                                    justifyContent: "center"
+                                }}
+                            >
+                                {day ? <Check color="#9BD199" strokeWidth={3}/> : <X color="#C4C4C4" strokeWidth={3}/>}
+                            </View>
+                        ))}
+                    </View>
+                    <View style={{display: "flex", flexDirection: "row", gap: 6, alignItems: "center", justifyContent: "center", flex: 1}}>
+                        <Star size={24} color={logged ? "orange" : "#C4C4C4"} fill={logged ? "#FFC561" : "#C4C4C4"}/>
+                        <Text style={{fontSize: 20, fontWeight: 500}}>{streakNumber}</Text>
+                    </View>
                 </View>
             </View>
         </Pressable>

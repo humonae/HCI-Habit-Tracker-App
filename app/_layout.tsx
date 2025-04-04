@@ -25,6 +25,11 @@ export default function RootLayout() {
 
   return (
     <Stack>
+      <Stack.Screen name="index" options={{title: "Tracker", headerShown: true, headerTransparent: true, headerTintColor: "white", headerStyle: {backgroundColor: "transparent"}}}/>
+      <Stack.Screen name="signup" options={{headerShown: false, title: ""}}/>
+      <Stack.Screen name="addNote" options={{headerShown: false}}/>
+      <Stack.Screen name="calendar" options={{title: ""}}/>
+      <Stack.Screen name="(tabs)" options={{headerShown: false, title: ""}}/>
     </Stack>
   );
 }

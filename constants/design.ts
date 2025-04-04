@@ -1,0 +1,12 @@
+export const VERTICAL_PADDING = 8;
+export const HORIZONTAL_PADDING = 8;
+export const BORDER_COLOR = "#DCDCDC";
+export const BORDER_RADIUS = 9;
+export const BUTTON_BORDER_RADIUS = 50;
+export const BLUE = "#007AFF";
+export const BOX_SHADOW =  "0px 2px 2px 0px rgba(0,0,0,0.0.05)";
+export const BOX_SHADOW_MD =  "0px 2px 2px 0px rgba(0,0,0,0.075)";
+export const GREEN_1 = "#e3ffe0";
+export const GREEN_2 = "#50bf5d";
+export const RED_1 = "#fce6e6";
+export const RED_2 = "red";

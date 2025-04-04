@@ -3,8 +3,13 @@ import { Text, View, ScrollView } from "react-native";
 import * as SQLite from 'expo-sqlite';
 import React, { useEffect, useState } from "react";
 import Habit from "@/components/Habit";
-import ButtonWrapper from "@/components/ButtonWrapper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BLUE, HORIZONTAL_PADDING, VERTICAL_PADDING } from "@/constants/design";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Header from "@/components/basic/Header";
+import ButtonWrapper from "@/components/basic/ButtonWrapper";
+import { Plus } from "lucide-react-native";
+import { BUTTON_LABEL_STYLE } from "@/components/basic/Button";
 
 export default function Dashboard() {
   const [userID, setUserID] = useState<number|null>();
@@ -13,28 +18,22 @@ export default function Dashboard() {
   useFocusEffect(
     React.useCallback(() => {
       const load = async () => {
-        try {  
+        try {
+          // Fetch Stored User ID
           const storedUserID: string|null = await AsyncStorage.getItem('userID');
-          if (!storedUserID)
+          if (!storedUserID) {
+            router.replace("/");
             return;
+          }
+
           const userID = parseInt(storedUserID);
           setUserID(userID);
-          
-          const db = await SQLite.openDatabaseAsync('databaseName');
-          await db.execAsync(`
-            CREATE TABLE IF NOT EXISTS User (ID INTEGER PRIMARY KEY, FName TEXT NOT NULL, LName TEXT NOT NULL, Email TEXT NOT NULL UNIQUE, Password TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS Habit (ID INTEGER PRIMARY KEY, UserID INTEGER NOT NULL, Frequency TEXT NOT NULL, Name TEXT NOT NULL, Good INTEGER NOT NULL, Alert INTEGER NOT NULL, FOREIGN KEY(UserID) REFERENCES User(ID));
-            CREATE TABLE IF NOT EXISTS HabitJournal (ID INTEGER PRIMARY KEY, HabitID INTEGER NOT NULL, CreationDate DATETIME NOT NULL DEFAULT CURRENT_DATE, Content TEXT NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
-            CREATE TABLE IF NOT EXISTS HabitHistory (HabitID INTEGER NOT NULL, DateCompleted DATE NOT NULL DEFAULT CURRENT_DATE, FOREIGN KEY(HabitID) REFERENCES Habit(ID), PRIMARY KEY(HabitID, DateCompleted));
-            CREATE TABLE IF NOT EXISTS HabitAlarms (ID INTEGER PRIMARY KEY, HabitID INTEGER NOT NULL, Alarm DATETIME NOT NULL, FOREIGN KEY(HabitID) REFERENCES Habit(ID));
-          `);
-  
           if (!userID)
-            return;
-          console.log("User ID: " + userID);
+            return;        
+
+          const db = await SQLite.openDatabaseAsync('databaseName');
           const habits: any = await db.getAllAsync(`SELECT Habit.* FROM Habit JOIN User ON User.ID = Habit.UserID WHERE User.ID = ${userID}`);
           setHabits(habits);
-          console.log(habits);
         }
         catch (err) {
           console.error(err);
@@ -47,21 +46,26 @@ export default function Dashboard() {
   return (
     <ScrollView
       style={{
-        padding: 24,
+        backgroundColor: "white",
+        paddingVertical: VERTICAL_PADDING * 8,
+        paddingHorizontal: HORIZONTAL_PADDING * 2,
         flex: 1,
-        rowGap: 24,
         width: "100%"
       }}
     >
-
-      <View style={{display: "flex", rowGap: 12, marginTop: 50}}>
-        <Text style={{fontSize: 25, fontWeight: "bold"}}>Your Habits</Text>
-        <View
-          style={{
-            display: "flex",
-            rowGap: 12
-          }}
-        >
+      <SafeAreaView style={{display: "flex", rowGap: 24}}>
+        <View>
+          <Header
+            title="Your Habits"
+            paragraph=""
+          />
+          {/* No Habits Message */}
+          {!!!habits.length && 
+            <Text style={{marginTop: 4, fontSize: 16, fontWeight: 400, color: "gray"}}>Looks like you don't have any habits! Click the button below to create a habit.</Text>
+          }
+        </View>
+        {/* Habits */}
+        <View style={{display: "flex", rowGap: 12}}>
           {habits.map((habit, i) => (
             <View key={i}>
               <Habit 
@@ -71,8 +75,14 @@ export default function Dashboard() {
             </View>
           ))}
         </View>
-      </View>
-      <ButtonWrapper onPress={() => router.navigate("/addHabit")} style={{width: "100%", marginTop: 20, marginBottom: 100}} title="Add Habit"/>
+      </SafeAreaView>
+      <ButtonWrapper 
+        onPress={() => router.navigate("/addHabit")} 
+        style={{width: "100%", gap: VERTICAL_PADDING, backgroundColor: "white", borderWidth: 1, borderColor: BLUE}}
+      >
+          <Plus color={BLUE}/>
+          <Text style={{...BUTTON_LABEL_STYLE, color: BLUE, letterSpacing: 0.35}}>Add Habit</Text>
+      </ButtonWrapper>
     </ScrollView>
   );
 }
