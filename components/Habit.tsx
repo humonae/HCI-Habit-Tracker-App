@@ -19,8 +19,8 @@ export default function Habit(props: HabitProps) {
     const [weekStreak, setWeekStreak] = useState(Array(7).fill(false));
     const [streakNumber, setStreakNumber] = useState(0);
     const [unclickedColor, setUnclickedColor] = useState(props.good ? '#eee' : '#E9FAE3');
-    const [clickedColor, setClickedColor] = useState(props.good ? '#E9FAE3' : '#facaca');
-    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#9BD199' : '#eb8f8f');
+    const [clickedColor, setClickedColor] = useState(props.good ? '#E9FAE3' : '#fcebeb');
+    const [loggedStreakTextColor, setLoggedStreakTextColor] = useState(props.good ? '#9BD199' : '#f7baba');
     const [unloggedStreakTextColor, setUnloggedStreakTextColor] = useState(props.good ? '#C4C4C4' : '#9BD199');
 
 
@@ -267,9 +267,9 @@ export default function Habit(props: HabitProps) {
                                 event.stopPropagation();
                                 handleLogPress();
                             }}
-                            style={{borderRadius: 100, width: 32, height: 32, backgroundColor: "#F5F5F5", display: "flex", alignItems: "center", justifyContent: "center", borderWidth: 0, borderColor: "#C4C4C4"}}
+                            style={{borderRadius: 100, width: 32, height: 32, backgroundColor: logged ? clickedColor : '#F5F5F5', display: "flex", alignItems: "center", justifyContent: "center", borderWidth: 0, borderColor: "#C4C4C4"}}
                         >
-                            <BadgePlus size={20} color="#C4C4C4"/>
+                            <BadgePlus size={20} color={logged ? loggedStreakTextColor : "#C4C4C4"}/>
                         </Pressable>
                         {/* Note Press */}
                         <Pressable
